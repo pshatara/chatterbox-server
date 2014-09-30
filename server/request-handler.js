@@ -14,7 +14,22 @@ var handleRequest = function(request, response) {
 
   console.log("Serving request type " + request.method + " for url " + request.url);
 
-  var statusCode = 200;
+  var statusCode;
+  var sendBack = {
+    results: []
+  };
+
+  var callBack = function(){
+
+  };
+
+  if(request.method === 'GET') {
+    statusCode = 200;
+  } else if( request.method === 'POST') {
+    sendBack.results.push(request._postData);
+    statusCode = 201;
+  }
+  response.writeHead(statusCode, headers);
 
   /* Without this line, this server wouldn't work. See the note
    * below about CORS. */
@@ -23,13 +38,14 @@ var handleRequest = function(request, response) {
   headers['Content-Type'] = "text/plain";
 
   /* .writeHead() tells our server what HTTP status code to send back */
-  response.writeHead(statusCode, headers);
 
   /* Make sure to always call response.end() - Node will not send
    * anything back to the client until you do. The string you pass to
    * response.end() will be the body of the response - i.e. what shows
    * up in the browser.*/
-  response.end("Hello, World!");
+
+   console.log("WHAT", sendBack.results);
+  response.end(JSON.stringify(sendBack));
 };
 
 /* These headers will allow Cross-Origin Resource Sharing (CORS).
@@ -43,3 +59,5 @@ var defaultCorsHeaders = {
   "access-control-allow-headers": "content-type, accept",
   "access-control-max-age": 10 // Seconds.
 };
+
+exports.handler = handleRequest;
