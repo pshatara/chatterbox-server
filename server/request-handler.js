@@ -5,6 +5,10 @@
  * this file and include it in basic-server.js so that it actually works.
  * *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html. */
 
+var sendBack = {
+  results: []
+};
+
 var handleRequest = function(request, response) {
   /* the 'request' argument comes from nodes http module. It includes info about the
   request - such as what URL the browser is requesting. */
@@ -15,20 +19,18 @@ var handleRequest = function(request, response) {
   console.log("Serving request type " + request.method + " for url " + request.url);
 
   var statusCode;
-  var sendBack = {
-    results: []
-  };
 
-  var callBack = function(){
 
-  };
-
-  if(request.method === 'GET') {
+  if( request.method === 'GET' ) {
     statusCode = 200;
-  } else if( request.method === 'POST') {
-    sendBack.results.push(request._postData);
+    // console.log("INSIDE", sendBack.results[0].username);
+  } else if( request.method === 'POST' ) {
+    request.on('data', function (data) {
+      sendBack.results.push(JSON.parse(data));
+    });
     statusCode = 201;
   }
+
   response.writeHead(statusCode, headers);
 
   /* Without this line, this server wouldn't work. See the note
@@ -44,7 +46,6 @@ var handleRequest = function(request, response) {
    * response.end() will be the body of the response - i.e. what shows
    * up in the browser.*/
 
-   console.log("WHAT", sendBack.results);
   response.end(JSON.stringify(sendBack));
 };
 
